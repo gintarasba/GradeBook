@@ -12,7 +12,7 @@ use \App\Duty;
 
 class UserController extends Controller
 {
-    //
+    
     public function postLogin(Request $request)
     {
       $messages = array(
