@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
           <form id="editForm">
-              <input type="hidden" name="_token" value="{{ csrf_token() }}"/ />
+              <input type="hidden" name="_token" id="_tokenEdit" value="{{ csrf_token() }}"/ />
               <input name="idUpdated" id="idUpdated" type="hidden"  class="form-control" placeholder="" value="" >
               <div class="form-group has-feedback" >
                   <input name="name" id="name" type="text"  class="form-control" placeholder="Vardas" >
@@ -87,9 +87,6 @@
                     @endforeach
                     </select>
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
-                    <div class="dutiesList">
-
-                    </div>
                 </div>
            </form>
       </div>
@@ -111,16 +108,10 @@ function openEditModal(userId) {
     var level = rowData[5];
     var loginNameTitle = $('#loginNameTitleEdit');
     var dutiesList = JSON.parse(rowData[9]);
-    var dutiesHtml = '';
-    $('.dutiesList').html('<label>Parinktos pareigos</label><div class="labelcomment">Nėra pasirinktų pareigų.</div>');
 
-    if(dutiesList.length > 0)$('.labelcomment').remove();
-    for(var key in dutiesList) {
-        var duty = dutiesList[key];
-        dutiesHtml += "<div class=\"duty_"+userId+"_"+duty.id+"\">"+duty.title+" "+
-        "<button type=\"button\" class=\"btn btn-primary btn-xs\" onClick=\"detachDuty('"+duty.id+"','"+duty.title+"', '"+userId+"')\">X</button></div>";
+    if(dutiesList.length > 0) {
+        $('#dutySelect option:contains("' + dutiesList[0].title + '")').prop('selected', true);
     }
-    $('.dutiesList').append(dutiesHtml);
 
     //null
     if($('#userEditModal #nameErr').length > 0) $('#userEditModal #nameErr').remove();

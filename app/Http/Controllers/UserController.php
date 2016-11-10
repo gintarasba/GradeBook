@@ -9,10 +9,16 @@ use Validator;
 use Hash;
 use \App\User;
 use \App\Duty;
+use Illuminate\Support\Facades\Input;
+use \Response;
+use \App\Group;
+use \Session;
+use \App\Subject;
+
 
 class UserController extends Controller
 {
-    
+
     public function postLogin(Request $request)
     {
       $messages = array(
@@ -203,8 +209,21 @@ class UserController extends Controller
 
 
 
-    public function updateUserData(Request $request)
+    public function updateUserData()
     {
+
+        if(!Input::has('_token')) {
+            return Response::json(['success' => false, 'message' => 'Neįvestas tokenas, prašome perkrauti puslapį.']);
+        }
+
+        if(Session::token() !== Input::get('_token')) {
+            return Response::json(['success' => false, 'message' => 'Blogas tokenas, prašome perkrauti puslapį.']);
+        }
+
+        if(!Input::has('id')) {
+            return Response::json(['success' => false, 'message' => 'Nerastas vartotojas', 'code' => 'UserNotFound']);
+        }
+
         $messages = array(
           'name.required' => 'Neįvestas vardas.',
           'second_name.required' => 'Neįvesta pavardė.',
@@ -217,43 +236,68 @@ class UserController extends Controller
           'pcode.min' => 'Per trumpas asmens kodas.',
         );
 
-        $validation = Validator::make($request->all(),[
+        $validation = Validator::make(Input::all(),[
           'name' => 'required|min:4|max:255',
           'second_name' => 'required|min:2|max:255',
           'pcode' => 'required|min:11|max:12',
         ], $messages);
 
 
-        $existingUser = User::where('id', e($request['id'])) -> first();
+        $existingUser = User::where('id', e(Input::get('id'))) -> first();
         if(empty($existingUser)) {
-            return json_encode(array('err' => 'UserNotFound'));
+            return Response::json(['success' => false, 'message' => 'Vartotojas nebuvo rastas.', 'code'=>'UserNotFound']);
         }
 
         if($validation->fails()) {
-            return json_encode(array('err' => 'Fields', 'messages' => $validation->messages()->getMessages()));
+            return Response::json(['success' => false, 'messages' => $validation->messages()->getMessages(), 'code'=>'Fields']);
         } else {
 
-
-            $existingUser->name = e($request['name']);
-            $existingUser->second_name = e($request['second_name']);
-            $existingUser->pcode = e($request['pcode']);
-            if(!empty($request['password']))
-                $existingUser->password = e\Hash::make(e($request['password']));
+            $existingUser->name = e(Input::get('name'));
+            $existingUser->second_name = e(Input::get('second_name'));
+            $existingUser->pcode = e(Input::get('pcode'));
+            if(!empty(Input::get('password')))
+                $existingUser->password = e\Hash::make(e(Input::get('password')));
             $existingUser->save();
 
-            $dutyId = (int) $request['dutyId'];
+            $dutyId = (int) Input::get('dutyId');
             if($dutyId != -1) {
                 $duty = Duty::where('id', $dutyId)->first();
-                if(!empty($duty) & !$existingUser->duties()->where('duties.id', $dutyId)->exists()) {
+
+                if(count($existingUser->duties()->get()) < 1) {
                     $existingUser->duties()->attach($duty);
+                } else {
+                    $existingUserDuty = $existingUser->duties()->first();
+                    if(!empty($existingUserDuty))
+                        $existingUser->duties()->detach($existingUserDuty);
+
+                    $existingUser->duties()->attach($duty);
+
                 }
+
+            } else {
+                $existingUserDuty = $existingUser->duties()->first();
+                if(!empty($existingUserDuty))
+                    $existingUser->duties()->detach($existingUserDuty);
             }
-            return json_encode(array('err' => ''));
+            return Response::json(['success' => true, 'message' => 'Success']);
         }
     }
 
 
-
+    public function getUsersListByKeyword()
+    {
+        if(!Input::has('keyword')) {
+            return Response::json(['success' => false]);
+        }
+        $keyword = e(Input::get('keyword'));
+        $users = User::where('name', 'LIKE', '%'.$keyword.'%')->get();
+        $usersList = array();
+        foreach($users AS $user) {
+            $existingUserDuty = $user->duties()->first();
+            $usersList[] = array('id' => $user->id, 'name' => $user->name, 'second_name' => $user->second_name, 'loginName' => $user->loginName, 'dutyTitle' => $existingUserDuty->title);
+        }
+        return Response::json(['success' => true, 'usersList' => $usersList]);
+    }
 
     public function home()
     {

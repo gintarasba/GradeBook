@@ -20,7 +20,16 @@ class PermitsMiddleware
         $routeName = $request->route()->getName();
         $valid = false;
         switch($routeName) {
-            case 'showUserMarks':
+            case 'showUserGrades':
+                $user = Auth::user();
+                $duties = $user->duties()->get();
+                foreach($duties AS $duty) {
+                    $permit = $duty->permits()->where('code' , 'OBJECT_MARKS_VIEW')->get();
+                    if(!empty($permit)) $valid = true;
+                }
+            break;
+
+            case 'showMyMarks':
                 $user = Auth::user();
                 $duties = $user->duties()->get();
                 foreach($duties AS $duty) {

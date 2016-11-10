@@ -24,8 +24,13 @@ Route::group(['middleware' => [
     'App\Http\Middleware\PermitsMiddleware'
     ]], function() {
     Route::get('/user/gradeBook', [
-        'uses' => 'GradeBookController@showUserMarks',
-        'as' => 'showUserMarks'
+        'uses' => 'GradeBookController@showMyMarks',
+        'as' => 'showMyMarks'
+    ]);
+
+    Route::get('/user/gBook', [
+        'uses' => 'GradeBookController@showUserGrades',
+        'as' => 'showUserGrades'
     ]);
 });
 
@@ -65,6 +70,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMid
         'as' =>'generateNewLoginName'
     ]);
 
+    Route::get('/users/list/json', [
+        'uses' => 'UserController@getUsersListByKeyword',
+        'as' =>'getUsersListByKeyword'
+    ]);
     /**
      * DutyController
      *
@@ -99,14 +108,38 @@ Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMid
         'as' => 'newGroupsForm'
     ]);
 
+    Route::get('/goups/new', [
+        'uses' => 'GroupController@newGroupTitle',
+        'as' => 'newGroupTitle'
+    ]);
 
+    Route::get('/groups/add/user', [
+        'uses' => 'GroupController@addUserToGroup',
+        'as' => 'addUserToGroup'
+    ]);
+
+    Route::get('/groups/detach/user', [
+        'uses' => 'GroupController@detachFromGroup',
+        'as' => 'detachFromGroup'
+    ]);
     /**
      * MarksController
      *
     */
 
+    /**
+     * SubjectController
+     *
+    */
+   Route::get('/group/subjects', [
+      'uses' => 'SubjectController@newSubjectForm',
+      'as' => 'newSubjectForm'
+   ]);
 
-
+   Route::get('/subjects/new', [
+       'uses' => 'SubjectController@newSubjectTitle',
+       'as' => 'newSubjectTitle'
+   ]);
 
 });
 

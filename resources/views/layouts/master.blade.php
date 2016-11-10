@@ -21,7 +21,7 @@
         -->
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/skins/skin-blue.min.css') }}">
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/sidemenu.css') }}">
-        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/custom.css') }}">
+        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/custom.blade.css') }}">
 
         <!-- iCheck -->
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/plugins/iCheck/square/blue.css') }}">
@@ -30,7 +30,7 @@
 
         <link rel="stylesheet" href="{{ URL::to('plugins/sweetAlert/sweetalert2.css') }}">
         <link rel="stylesheet" href="{{ URL::to('plugins/ladda/css.css') }}">
-
+        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/suggest.css') }}">
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -65,6 +65,7 @@
         <script src="{{ URL::to('plugins/sweetAlert/sweetalert2.min.js') }}"></script>
         <script src="{{ URL::to('plugins/ladda/spin.js') }}"></script>
         <script src="{{ URL::to('plugins/ladda/ladda.js') }}"></script>
+        <script src="{{ URL::to('AdminLTE-2.3.5/dist/js/suggest.js') }}"></script>
         @yield('javascripts')
         <script>
             $(function () {

@@ -365,7 +365,7 @@
             var level = rowData[5];
             var password = $(modal.find('#password'));
             var dutySelect = $(modal.find('#dutySelect'));
-            var _token = $('#_token').val();
+            var _token = $('#_tokenEdit').val();
             $.ajax({
                 url: "{{ route('updateUserData') }}",
                 type: 'get',
@@ -381,10 +381,10 @@
                  },
             }).always(function(out) {
                 console.log(out);
-                if(out.err == '') {
+                if(out.success == true) {
                     $('.modal').modal('hide');
                     //location.reload();
-                } else if(out.err == 'Fields') {
+                } else if(out.code == 'Fields') {
                     for(var field in out.messages) {
                         var error = out.messages[field];
                         console.log(field, error);

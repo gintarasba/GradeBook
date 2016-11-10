@@ -32,4 +32,9 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Duty', 'users_duties');
     }
 
+    public function group()
+    {
+        return $this->belongsToMany('App\Group', 'groups_users');
+    }
+
 }
