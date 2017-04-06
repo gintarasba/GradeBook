@@ -1,0 +1,7 @@
+AuthName "dienynas.itblur.lt statistics"
+AuthType Basic
+AuthUserFile /home/itblur.lt/domains/dienynas.itblur.lt/.stats-htpasswd
+require valid-user
+<Files .stats-htpasswd>
+deny from all
+</Files>

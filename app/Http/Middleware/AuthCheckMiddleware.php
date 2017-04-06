@@ -16,11 +16,12 @@ class AuthCheckMiddleware
      */
     public function handle($request, Closure $next, $guard = null)
     {
-
         if (!Auth::guard($guard)->check()) {
             return redirect('/');
         }
-
+        
+        Auth::user()->updated_at = new \Datetime();
+        Auth::user()->save();
         return $next($request);
     }
 }

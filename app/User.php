@@ -15,8 +15,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'second_name', 'loginName', 'pcode', 'level', 'password',
+        'uid', 'name', 'second_name', 'loginName', 'pcode', 'level', 'password',
     ];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -37,4 +38,36 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Group', 'groups_users');
     }
 
+    public function subjects()
+    {
+        return $this->belongsToMany('App\Subject', 'users_subjects');
+    }
+
+    public function photos()
+    {
+        return $this->hasMany('App\UserPhoto');
+    }
+
+    public function marks()
+    {
+        return $this->hasMany('App\Mark');
+    }
+
+    public function conversations()
+    {
+        return $this->belongsToMany('App\Conversation', 'users_conversations');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany('App\Message');
+    }
+
+    public function isAdmin()
+    {
+        if ($this->level == 2) {
+            return true;
+        }
+        return false;
+    }
 }

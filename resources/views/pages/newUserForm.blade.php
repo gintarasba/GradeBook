@@ -26,10 +26,12 @@
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper niceBg">
             <section class="content">
-                @include('includes.aside')
-
                 <div class="row">
-                    <div class="col-md-4 col-md-offset-4">
+                    <div class="col-md-2">
+                        @include('includes.aside')
+                    </div>
+
+                    <div class="col-md-10">
                         <div class="register-box-body">
                             <p class="login-box-msg">Naujo vartotojo kūrimas</p>
 

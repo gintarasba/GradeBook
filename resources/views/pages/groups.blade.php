@@ -26,11 +26,12 @@
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper niceBg">
             <section class="content">
-                @include('includes.aside')
-
-
                 <div class="row">
-                    <div class="col-md-10 col-md-offset-2">
+                    <div class="col-md-2">
+                        @include('includes.aside')
+                    </div>
+
+                    <div class="col-md-10">
                         <div class="panel panel-default">
                             <div class="panel-body">
 
@@ -59,13 +60,22 @@
                                             <td>{{ $group->id }}</td>
                                             <td>{{ $group->title }}</td>
                                             <td>
-                                            @php $jsonArray = array(); @endphp
+                                            @php $jsonArray = array(); $i = 0; @endphp
                                             @foreach( $group->users()->get() AS $groupUser )
                                                 @php $duty = $groupUser->duties()->first(); @endphp
-                                                <div>{{ $groupUser->name }} ({{ $duty->title }})</div>
+                                                {{ $groupUser->name }} ({{ $duty->title }})
+                                                @php
+                                                if($i >= 3) {
+                                                    $i = 0;
+                                                    echo '<br/>';
+                                                }
+                                                $i++;
+                                                @endphp
                                                 @php $jsonArray[] = array('id'=> $groupUser->id, 'name' => $groupUser->name,
                                                     'dutyTitle' => $duty->title, 'dutyId' => $duty->id, 'groupId' => $group->id);
                                                 @endphp
+
+
                                             @endforeach
                                             </td>
                                             <td>{{ json_encode($jsonArray) }}</td>
@@ -141,6 +151,9 @@
     @section('javascripts')
         <script>
         var groupsDataTable;
+        var addButtonLadda = Ladda.create( document.querySelector( '.addButton' ) );
+
+
         $('.saveEdit').on('click', function() {
             $('#groupEditModal').modal('hide');
         });
@@ -235,7 +248,7 @@
 
         function replaceCurrent(userId, userName) {
             $('#suggestedId').html(userId);
-            $('#users').val(userName);
+            $('#usersSearch').val(userName);
             $('#suggest').attr('style', 'display: none;').html('');
         }
 
@@ -244,6 +257,7 @@
             event.preventDefault();
             /* Act on the event */
             var button = this;
+            addButtonLadda.start();
             var userId = $('#suggestedId').html();
             var groupId = $('#idEdited').val();
 
@@ -258,6 +272,7 @@
                     +out.user.name+'</td><td>'+out.user.dutyTitle+
                     '</td><td><button type="button" class="btn btn-primary btn-xs" onClick="detachUserFromGroup(\''+groupId+'\',\''+out.user.id+'\');" data-target="#editModal">X</button></td></tr>');
                 }
+                addButtonLadda.stop();
             });
 
         });
@@ -289,8 +304,10 @@
                 ]
             });
 
-            $('#users').on('keyup', function() {
-                var keyword = $('#users').val();
+
+            $('#usersSearch').on('keyup', function() {
+                var keyword = $('#usersSearch').val();
+                addButtonLadda.start();
                 $.ajax({
                     url: "{{ route('getUsersListByKeyword') }}",
                     type: 'GET',
@@ -299,8 +316,9 @@
                 }).always(function(out) {
                     if(out.success == true) {
                         startSuggest(out.usersList, keyword);
-                    }
 
+                    }
+                    addButtonLadda.stop();
                 });
             });
 

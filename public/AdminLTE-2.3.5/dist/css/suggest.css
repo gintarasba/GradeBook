@@ -4,6 +4,7 @@
     border: 1px solid #CCCCFF;
     font-size: 90%;
     width: 100%;
+    z-index: 999999;
 }
 #suggest div {
     display: block;
@@ -13,6 +14,7 @@
     padding: 5px;
     cursor: pointer;
     cursor: hand;
+
 }
 #suggest div.select{ /* keydown, keyup */
     color: #FFFFFF;

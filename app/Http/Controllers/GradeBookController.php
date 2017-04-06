@@ -13,52 +13,122 @@ use Illuminate\Support\Facades\Input;
 use \Response;
 use \App\Group;
 use \Session;
+use \App\Subject;
+use \App\Mark;
+use \Auth;
 
 class GradeBookController extends Controller
 {
     public function showMyMarks()
     {
-        $user = \Auth::user();
-        $userGroup = $user->group()->first();
-        $userSubjectList = $userGroup->subjects()->get();
+        $user = Auth::user();
 
-        $monthsOut = '';
-        $array = array("Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė",
-            "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis",
-            "Lapkritis", "Gruodis");
-        $year = date("Y");
-
-        for ($m=0; $m<12; $m++) {
-            $daysCount = cal_days_in_month(CAL_GREGORIAN, $m+1, $year);
-            $monthsOut .= '<th class="borderBoth" colspan="'.$daysCount.'">'.$array[$m].'</th>';
-        }
-
-        return view('pages.gradeBook', ['userSubjectList' => $userSubjectList,
-            'monthsOut' => $monthsOut]);
+        return view('pages.gradeBook', [
+            'userInfo' => $user
+        ]);
     }
 
-    public function showUserGrades()
+    public function showUserGrades($userId)
     {
-        if(!Input::has('user')) {
-            return view('pages.home');
-        }
-        $userId = e(Input::get('user'));
         $user = User::where('id', $userId)->first();
-        $userGroup = $user->group()->first();
-        $userSubjectList = $userGroup->subjects()->get();
+        return view('pages.gradeBook', [
+            'userInfo' => $user
+        ]);
+    }
 
-        $monthsOut = '';
-        $array = array("Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė",
-            "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis",
-            "Lapkritis", "Gruodis");
-        $year = date("Y");
-
-        for ($m=0; $m<12; $m++) {
-            $daysCount = cal_days_in_month(CAL_GREGORIAN, $m+1, $year);
-            $monthsOut .= '<th class="borderBoth" colspan="'.$daysCount.'">'.$array[$m].'</th>';
+    public function updateGrade()
+    {
+        if (!Input::has('_token')) {
+            return Response::json(['success' => false, 'message' => 'Prašome perkrauti puslapį.']);
         }
 
-        return view('pages.gradeBook', ['userSubjectList' => $userSubjectList,
-            'monthsOut' => $monthsOut, 'userInfo' => $user]);
+        if (Session::token() !== e(Input::get('_token'))) {
+            return Response::json(['success' => false, 'message' => 'Blogas tokenas, prašome perkrauti puslapį.']);
+        }
+
+        if (!Input::has('user')) {
+            return Response::json(['success' => false, 'message' => 'Prašome įvesti vartotojo id.']);
+        }
+
+        if (!Input::has('subj')) {
+            return Response::json(['success' => false, 'message' => 'Prašome įvesti pamokos/dalyko id.']);
+        }
+
+        if (!Input::has('dat')) {
+            return Response::json(['success' => false, 'message' => 'Prašome įvesti data id.']);
+        }
+
+        if (!Input::has('mark')) {
+            return Response::json(['success' => false, 'message' => 'Prašome įvesti pažimį.']);
+        }
+
+        $userId = e(Input::get('user'));
+        $subjectId = e(Input::get('subj'));
+        $data = e(Input::get('dat'));
+        $markVal = (int) e(Input::get('mark'));
+
+        // patikrini ar egzistuoja useris/ subject/ data
+
+        $mark = Mark::where([
+            ['user_id', $userId],
+            ['subject_id', $subjectId],
+            ['day', $data],
+        ])->first();
+
+        if (!empty($mark)) {
+            $mark->mark = $markVal;
+        } else {
+            $mark = new Mark();
+            $mark->user_id = $userId;
+            $mark->subject_id = $subjectId;
+            $mark->mark = $markVal;
+            $mark->day = $data;
+        }
+        $mark->save();
+
+        if ($markVal == -1) {
+            $mark->delete();
+        } else {
+            $mark->touch();
+        }
+
+
+        return Response::json(['success' => true]);
+    }
+
+    public function getMarksJson()
+    {
+        if (!Input::has('userId')) {
+            return Response::json([
+                'success' => false
+            ]);
+        }
+
+        $user = User::where('id', $userId)->first();
+        $userGrades = Mark::where('user_id', $userId)->get();
+
+        $gradesList = array();
+        foreach ($userGrades as $grade) {
+            $data = explode('-', $grade->day);
+            $gradesList[$grade->subject_id][$data[0]][$data[1]][$data[2]] = $grade->mark;
+        }
+
+        return Response::json([
+            'success' => true,
+            'grades' => $gradesList,
+        ]);
+    }
+
+
+    public function showUsersGrades($group)
+    {
+        $currentGroup = Group::find($group);
+        if (is_null($currentGroup)) {
+            return redirect()->back();
+        }
+
+        return view('pages.multipleUsersGradeBook', [
+            'currentGroup' => $currentGroup
+        ]);
     }
 }

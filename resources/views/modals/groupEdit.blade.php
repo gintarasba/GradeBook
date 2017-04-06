@@ -15,7 +15,7 @@
               <div class="row">
                   <div class="col-sm-7">
                       <div class="form-group has-feedback" >
-                          <input name="users" id="users" type="text" ontyped class="form-control" placeholder="Ieškoti" autocomplete="Off">
+                          <input name="users" id="usersSearch" type="text" ontyped class="form-control" placeholder="Ieškoti" autocomplete="Off">
                           <div id="suggest" style="display:none;"></div>
                           <div id="suggestedId" style="display: none;"></div>
                           <span class="glyphicon glyphicon-user form-control-feedback"></span>

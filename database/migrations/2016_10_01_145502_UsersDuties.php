@@ -15,9 +15,12 @@ class UsersDuties extends Migration
     {
         Schema::create('users_duties', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('duty_id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('duty_id')->unsigned();
             $table->timestamps();
+
+            $table->foreign('duty_id')->references('id')->on('duties')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

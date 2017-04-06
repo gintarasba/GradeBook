@@ -17,6 +17,5 @@ class DatabaseSeeder extends Seeder
         $this->call(DefaultSubjectsSeed::class);
         $this->call(DefaultGroupsSeed::class);
         $this->call(DefaultUsersSeed::class);
-
     }
 }

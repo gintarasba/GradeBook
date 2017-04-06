@@ -10,4 +10,9 @@ class Subject extends Model
     {
         return $this->belongsToMany('App\Group', 'groups_subjects');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'users_subjects');
+    }
 }

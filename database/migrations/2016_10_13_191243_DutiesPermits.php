@@ -15,9 +15,11 @@ class DutiesPermits extends Migration
     {
         Schema::create('duties_permits', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('duty_id');
-            $table->string('permit_id');
+            $table->integer('duty_id')->unsigned();
+            $table->integer('permit_id')->unsigned();
             $table->timestamps();
+
+            //$table->foreign('duty_id')->references('id')->on('users_duties')->onDelete('cascade');
         });
     }
 
