@@ -1,0 +1,25 @@
+#suggest {
+    position: absolute;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCFF;
+    font-size: 90%;
+    width: 100%;
+    z-index: 999999;
+}
+#suggest div {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 5px;
+    cursor: pointer;
+    cursor: hand;
+
+}
+#suggest div.select{ /* keydown, keyup */
+    color: #FFFFFF;
+    background-color: #3366FF;
+}
+#suggest div:hover{ /* mouse over */
+    background-color: #99CCFF;
+}

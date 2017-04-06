@@ -11,22 +11,32 @@
 |
 */
 
+
 Route::get('/', [
     'uses' => 'UserController@home',
     'as' => 'home'
 ]);
 
 
+Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
+    Route::post('pLogin', ['as' => 'loginPost', 'uses' => 'UserController@postLogin']);
+    Route::get('gLogout', ['as' => 'logoutGet', 'uses' => 'UserController@getLogout']);
+});
 
 
-Route::group(['middleware' => [
-    'App\Http\Middleware\AuthCheckMiddleware',
-    'App\Http\Middleware\PermitsMiddleware'
-    ]], function() {
-    Route::get('/user/gradeBook', [
-        'uses' => 'GradeBookController@showUserMarks',
-        'as' => 'showUserMarks'
-    ]);
+// Su api raktu
+Route::group(['middleware' => 'App\Http\Middleware\RasberryApiMiddleware'], function () {
+    Route::group(['prefix' => 'api'], function () {
+        Route::get('status/{appId}',  [
+            'uses' => 'RasberryApiController@checkStatus',
+            'as'   => 'checkStatus'
+        ])->where('appId', '[0-9]+');
+
+        Route::post('screenshot', [
+            'uses' => 'RasberryApiController@userCheckpointEvent',
+            'as'   => 'userCheckpointEvent'
+        ]);
+    });
 });
 
 
@@ -34,12 +44,79 @@ Route::group(['middleware' => [
 
 
 
-Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMiddleware'], function() {
+// Visiems prisijungusiems
+Route::group(['middleware' => 'App\Http\Middleware\AuthCheckMiddleware'], function () {
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('profile/{userId?}', [
+            'uses' => 'UserController@showProfile',
+            'as'   => 'showProfile'
+        ])->where('userId', '[0-9]+');
+
+        Route::get('newPass/{passLength?}', [
+            'uses' => 'UserController@generateNewPassword',
+            'as' =>'generateNewPassword'
+        ])->where('passLength', '[0-9]+');
+
+        Route::post('update/info', [
+            'uses' => 'UserController@updateUserInformation',
+            'as' => 'updateUserInformation'
+        ]);
+    });
+
+    Route::group(['as' => 'conversation.'], function () {
+        Route::get('messagesCenter', ['as' => 'list', 'uses' => 'ConversationController@showConversations']);
+        Route::post('sendMessage', ['as' => 'sendMessage', 'uses' => 'ConversationController@sendMessage']);
+        Route::get('suggestions', ['as' => 'suggestions', 'uses' => 'ConversationController@suggestList']);
+        Route::get('conversation', ['as' => 'newConversation', 'uses' => 'ConversationController@addNewConversation']);
+        Route::get('messages', ['as' => 'messages', 'uses' => 'ConversationController@messagesList']);
+    });
+});
+
+
+// Tik su specialiu leidimu
+Route::group(['middleware' => [
+    'App\Http\Middleware\AuthCheckMiddleware',
+    'App\Http\Middleware\PermitsMiddleware']],
+function () {
+    Route::get('/user/gradeBook', [
+        'uses' => 'GradeBookController@showMyMarks',
+        'as' => 'showMyMarks'
+    ]);
+
+    Route::get('/user/gBook/{user}', [
+        'uses' => 'GradeBookController@showUserGrades',
+        'as' => 'showUserGrades'
+    ])->where('user', '[0-9]+');
+
+    Route::get('/user/updateGrade', [
+        'uses' => 'GradeBookController@updateGrade',
+        'as' => 'updateGrade'
+    ]);
+
+    Route::get('/users/grades/{group?}', [
+        'uses' => 'GradeBookController@showUsersGrades',
+        'as' => 'showUsersGrades'
+    ])->where('group', '[0-9]+');
+});
+
+
+
+
+
+
+Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMiddleware'], function () {
 
     /**
      * UserController
      *
     */
+
+    Route::get('/user/allInfo/{userId}', [
+        'uses' => 'UserController@getDataAboutUser',
+        'as' => 'getDataAboutUser'
+    ])->where('userId', '[0-9]+');
+
+
     Route::get('/user/create', [
         'uses' => 'UserController@createNewUser',
         'as' => 'pNewUser'
@@ -55,14 +132,26 @@ Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMid
         'as' => 'showUsersList'
     ]);
 
-    Route::get('/user/newPass', [
-        'uses' => 'UserController@generateNewPassword',
-        'as' =>'generateNewPassword'
-    ]);
+
 
     Route::get('/user/newLogin', [
         'uses' => 'UserController@generateNewLoginName',
         'as' =>'generateNewLoginName'
+    ]);
+
+    Route::get('/users/list/json', [
+        'uses' => 'UserController@getUsersListByKeyword',
+        'as' =>'getUsersListByKeyword'
+    ]);
+
+    Route::get('/users/get/json', [
+        'uses' => 'UserController@getUserInfo',
+        'as' =>'getUserInfo'
+    ]);
+
+    Route::get('/user/delete', [
+        'uses' => 'UserController@dellUserComp',
+        'as' => 'dellUserComp'
     ]);
 
     /**
@@ -99,27 +188,55 @@ Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\AdminMid
         'as' => 'newGroupsForm'
     ]);
 
+    Route::get('/goups/new', [
+        'uses' => 'GroupController@newGroupTitle',
+        'as' => 'newGroupTitle'
+    ]);
 
+    Route::get('/groups/add/user', [
+        'uses' => 'GroupController@addUserToGroup',
+        'as' => 'addUserToGroup'
+    ]);
+
+    Route::get('/groups/detach/user', [
+        'uses' => 'GroupController@detachFromGroup',
+        'as' => 'detachFromGroup'
+    ]);
+
+    Route::get('/groups/user/attach', [
+        'uses' => 'GroupController@attachGroupToUser',
+        'as' => 'attachGroupToUser'
+    ]);
     /**
      * MarksController
      *
     */
-
-
-
-
-});
-
-
-
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('/pLogin', [
-      'uses' => 'UserController@postLogin',
-      'as' => 'loginPost'
+    Route::get('/mark/user/json', [
+        'uses' => 'GradeBookController@getMarksJson',
+        'as' => 'getMarksJson'
     ]);
 
-    Route::get('/gLogout', [
-      'uses' => 'UserController@getLogout',
-      'as' => 'logoutGet'
-    ]);
+    /**
+     * SubjectController
+     *
+    */
+   Route::get('/group/subjects', [
+      'uses' => 'SubjectController@newSubjectForm',
+      'as' => 'newSubjectForm'
+   ]);
+
+    Route::get('/subjects/new', [
+       'uses' => 'SubjectController@newSubjectTitle',
+       'as' => 'newSubjectTitle'
+   ]);
+
+    Route::get('/subject/user/attach', [
+       'uses' => 'SubjectController@attachSubjectToUser',
+       'as' => 'attachSubjectToUser'
+   ]);
+
+    Route::get('/subject/detach/user', [
+       'uses' => 'SubjectController@detachFromSbj',
+       'as' => 'detachFromSubject'
+   ]);
 });

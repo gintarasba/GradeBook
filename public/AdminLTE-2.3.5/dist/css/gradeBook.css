@@ -1,0 +1,162 @@
+table.gradeBook
+{
+	border-collapse: collapse;
+}
+table.gradeBook td, table.gradeBook th
+{
+	border-top: solid 1px #666666;
+	border-bottom: solid 1px #666666;
+	white-space: nowrap;
+	padding-left: 5px;
+	padding-right: 5px;
+	text-align: left;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+table.gradeBook th
+{
+	background-color: #666666;
+	color: #ffffff;
+    text-align: center;
+}
+.borderLeft {
+    border-left: 2px solid black;
+}
+.borderRight{
+    border-right: 2px solid black;
+}
+.borderBoth {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+.weekDay {
+    background: #d2cfcf;
+}
+#outerDiv
+{
+	position: relative;
+}
+#innerDiv
+{
+	overflow: auto;
+}
+#innerDiv table.gradeBook td
+{
+	white-space: nowrap;
+}
+
+.teachEdit {
+	cursor: pointer;
+	cursor: hand;
+
+}
+
+
+.gradeBookTable th:first-child {
+	width: 200px;
+}
+.gradeBookTable td:first-child {
+	width: 200px;
+	margin: 0;
+    padding: 0;
+}
+.gradeBookTable {
+	border: 2px solid black;
+	width: 100%;
+	min-width: 100%;
+	cursor: pointer;
+	cursor: hand;
+}
+.gradeBookTable thead {
+	border: 1px solid black;
+}
+
+.gradeBookTable thead {
+	border: 1px solid black;
+}
+
+.gradeBookTable th {
+	background: #ababab;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-top: 1px solid black;
+	border-collapse: collapse;
+	text-align: center;
+	cursor: pointer;
+	cursor: hand;
+}
+.gradeBookTable tr {
+	border: 3px solid black;
+}
+.gradeBookTable td {
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-top: 1px solid black;
+	border-collapse: collapse;
+	text-align: center;
+	cursor: pointer;
+	cursor: hand;
+}
+
+.gradeBookTable tr:hover td{
+	background: #91a092;
+}
+.gradeBookTable tr:nth-child(even) {
+	background: #d6d6d6;
+}
+.gradeBookTable tr:nth-child(odd) {
+	background: #f7f3f3;
+}
+
+.gradeBookMonths li.active a{
+	background: rgba(57, 187, 50, 0.4) !important;
+}
+
+.gradeBookMonths li a{
+	background: rgba(50, 148, 187, 0.4) !important;
+}
+
+.weekDay {
+    background: #d08383 !important;
+}
+
+.gradeBookAll {
+    overflow-x: scroll !important;
+}
+
+.gradeBookTable .currentDay {
+	background: rgba(50, 123, 60, 0.41) !important;
+    border-left: 3px outset rgba(50, 123, 60, 0.41) !important;
+    border-right: 3px outset rgba(50, 123, 60, 0.41) !important;
+}
+.notAvailable {
+    background: #4c4c4c;
+}
+
+.tableRowTitlePhotoContainer {
+	width: 20%;
+	float:left;
+}
+
+.tableRowContentPhotoContainer {
+	width: 60%;
+	float:left;
+}
+
+.tableRowButtonsPhotoContainer{
+	width: 20%;
+	float:left;
+}
+
+.tableRowButtonsPhotoContainer i {
+    font-size: 30px;
+}
+
+.strikeout {
+    background-image: linear-gradient(to bottom right,  transparent calc(50% - 1px), black, transparent calc(50% + 1px)) !important;
+}
+
+.imgPi {
+	width: 150px;
+    height: 150px;
+}

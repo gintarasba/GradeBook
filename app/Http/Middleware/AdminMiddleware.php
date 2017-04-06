@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
@@ -15,15 +16,16 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if($request->user() == null) {
+        if ($request->user() == null) {
             return redirect('/');
         }
 
-
-
-        if($request->user()->level != 2)
+        if ($request->user()->level != 2) {
             return redirect('/');
+        }
 
+        Auth::user()->updated_at = new \Datetime();
+        Auth::user()->save();
         return $next($request);
     }
 }

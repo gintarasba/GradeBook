@@ -10,7 +10,7 @@
           <ul id="menu-content" class="menu-content collapse out">
                 <li @if($route == 'home') class="active"  @endif>
                     <a href="{{ route('home') }}">
-                        <i class="fa fa-dashboard fa-lg"></i> Pagrindinis
+                        <i class="fa fa-dashboard fa-lg"></i> Pagrindinis @if(Auth::check()) ({{ Auth::user()->loginName }}) @endif
                     </a>
                 </li>
 
@@ -19,9 +19,10 @@
                     <div class="label">Administracinis pultas</div>
                 </li>
 
-                <li @if($route == 'showUsersList') class="active" @endif><a href="{{ route('showUsersList') }}"><i class="fa fa-users fa-lg"></i>Valdyti vartotojus</a></li>
-                <li @if($route == 'dutiesManagingForm') class="active" @endif><a href="{{ route ('dutiesManagingForm') }}"><i class="fa fa-users fa-lg"></i>Valdyti pareigas</a></li>
-                <li @if($route == 'newGroupsForm') class="active" @endif><a href="{{ route ('newGroupsForm') }}"><i class="fa fa-users fa-lg"></i>Valdyti grupes</a></li>
+                <li @if($route == 'showUsersList') class="active" @endif><a href="{{ route('showUsersList') }}"><i class="glyphicon glyphicon-asterisk"></i>Valdyti vartotojus</a></li>
+                <li @if($route == 'dutiesManagingForm') class="active" @endif><a href="{{ route ('dutiesManagingForm') }}"><i class="glyphicon glyphicon-asterisk"></i>Valdyti pareigas</a></li>
+                <li @if($route == 'newGroupsForm') class="active" @endif><a href="{{ route ('newGroupsForm') }}"><i class="glyphicon glyphicon-asterisk"></i>Valdyti grupes</a></li>
+                <li @if($route == 'newSubjectForm') class="active" @endif><a href="{{ route ('newSubjectForm') }}"><i class="glyphicon glyphicon-asterisk"></i>Valdyti pamokas/dalykus</a></li>
 
             @endif
                 <li class="labelNice">
@@ -31,38 +32,63 @@
             <?php
                 $menuLinks = array();
 
-                if(Auth::check()) {
-                    $userDuties = Auth::user()->duties()->get();
-                    foreach($userDuties AS $duty) {
-                        $permits = $duty->permits()->get();
-
-                        foreach($permits AS $permit) {
-                            if($permit['code'] == 'USER_MARKS_VIEW') {
-                                $menuLinks['marksBookView'] = $permit['id'];
-                            }
+                if (Auth::check()) {
+                    $userDuties = Auth::user()->duties()->first();
+                    if (!empty($userDuties)) {
+                        $permits = $userDuties->permits()->get();
+                        foreach ($permits as $permit) {
+                            $menuLinks[$permit['code']] = $permit['id'];
                         }
                     }
                 }
-
              ?>
-
-                @if(isset($menuLinks['marksBookView']))
-                    <li @if($route == 'showUserMarks') class="active" @endif><a href="{{ route ('showUserMarks') }}"><i class="fa fa-users fa-lg"></i>Pažymių knygelė</a></li>
+                <li><a href="{{ route('showProfile') }}"><i class="glyphicon glyphicon-briefcase"></i> Mano profilis</a></li>
+                @if(isset($menuLinks['USER_MARKS_VIEW']))
+                    <li @if($route == 'showMyMarks') class="active" @endif><a href="{{ route ('showMyMarks') }}"><i class="fa fa-users fa-lg"></i>Pažymių knygelė</a></li>
                 @endif
+                <li @if($route == 'conversation.list') class="active" @endif><a href="{{ route ('conversation.list') }}"><i class="fa fa-users fa-lg"></i>Žinutės</a></li>
+                @if(isset($menuLinks['OBJECT_MARKS_VIEW']))
+                    <li data-toggle="collapse" data-target="#products" @if($route == 'showUsersGrades') aria-expanded="true"  @endif >
+                      <a href="#"><i class="glyphicon glyphicon-user"></i> Pažymių knygelės <span class="arrow"></span></a>
+                    </li>
+                    <ul class="sub-menu collapse  @if($route == 'showUsersGrades') in @endif" id="products" @if($route == 'showUsersGrades') aria-expanded="true"  @endif>
+                        @php
+                        $currentGroupId = null;
+                        if(isset($currentGroup->id)) {
+                            $currentGroupId = $currentGroup->id;
+                        }
+                        $userGroups = Auth::user()->group()->get();
+                        $out = '';
+                        foreach($userGroups AS $key => $group) {
+                            $usersCount = $group->users()->count();
+                            $out .='
+                                <li '.($route == 'showUsersGrades' & $group->id == $currentGroupId ? 'class="active"' : '').'>
+                                    <a href="'.route('showUsersGrades', ['group' => $group->id]).'">'.$group->title.' ('.$usersCount.')</a>
+                                </li>';
 
-                <li  data-toggle="collapse" data-target="#products" >
-                  <a href="#"><i class="glyphicon glyphicon-user"></i> bla bla bla <span class="arrow"></span></a>
+                        }
+                        echo $out;
+                        @endphp
+
+
+                    </ul>
+                @endif
+                <li><a href="{{ route('auth.logoutGet') }}"><i class="glyphicon glyphicon-log-out"></i> Atsijungti</a></li>
+
+                <li class="labelNice">
+                    <div class="label">Prisijunge vartotojai <small>( Per paskutines 5 min )</small></div>
                 </li>
-                <ul class="sub-menu collapse" id="products">
-                    <li class="active"><a href="#">blablabla</a></li>
-                    <li><a href="#">blabla</a></li>
-                    <li><a href="#">bla</a></li>
-                    <li><a href="#">blablablablabla</a></li>
-                    <li><a href="#">blablabla</a></li>
-                    <li><a href="#">blabla</a></li>
-                </ul>
+                @php
+                $date = new \DateTime();
+                $date->modify("-5 minutes");
+                $usersList = App\User::where('updated_at', '>', $date)->get();
+                foreach($usersList AS $onlineUser) {
+                    echo '<li>
+                            <a href="#">'.$onlineUser->name.' '.$onlineUser->second_name.'</a>
+                        </li>';
+                }
+                @endphp
 
-                <li><a href="{{ route('logoutGet') }}"><i class="glyphicon glyphicon-log-out"></i> Atsijungti</a></li>
           </ul>
    </div>
 </div>

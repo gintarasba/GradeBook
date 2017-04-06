@@ -21,16 +21,24 @@
         -->
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/skins/skin-blue.min.css') }}">
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/sidemenu.css') }}">
-        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/custom.css') }}">
+        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/custom.blade.css') }}">
 
         <!-- iCheck -->
         <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/plugins/iCheck/square/blue.css') }}">
 
-        <link rel="stylesheet" href="{{ URL::to('plugins/DataTables/css/jquery.datatables.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::to('plugins/DataTables/css/jquery.dataTables.min.css') }}">
 
         <link rel="stylesheet" href="{{ URL::to('plugins/sweetAlert/sweetalert2.css') }}">
         <link rel="stylesheet" href="{{ URL::to('plugins/ladda/css.css') }}">
+        <link rel="stylesheet" href="{{ URL::to('/plugins/bootstrap-vertical-tabs-master/bootstrap.vertical-tabs.css') }}">
+        <link rel="stylesheet" href="{{ URL::to('AdminLTE-2.3.5/dist/css/suggest.css') }}">
 
+        <!-- jQuery 2.2.3 -->
+        <script src="{{ URL::to('AdminLTE-2.3.5/plugins/jQuery/jquery-2.2.3.min.js') }}"></script>
+
+
+        <script src="{{ URL::to('plugins/ladda/spin.js') }}"></script>
+        <script src="{{ URL::to('plugins/ladda/ladda.js') }}"></script>
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -42,16 +50,8 @@
         @yield('styles')
     </head>
     <body class="hold-transition skin-blue">
-
             @yield('content')
-
-
-
-
         <!-- REQUIRED JS SCRIPTS -->
-
-        <!-- jQuery 2.2.3 -->
-        <script src="{{ URL::to('AdminLTE-2.3.5/plugins/jQuery/jquery-2.2.3.min.js') }}"></script>
         <!-- Bootstrap 3.3.6 -->
         <script src="{{ URL::to('AdminLTE-2.3.5/bootstrap/js/bootstrap.min.js') }}"></script>
         <!-- AdminLTE App -->
@@ -63,8 +63,11 @@
         <script src="{{ URL::to('plugins/DataTables/datatables.min.js') }}"></script>
 
         <script src="{{ URL::to('plugins/sweetAlert/sweetalert2.min.js') }}"></script>
-        <script src="{{ URL::to('plugins/ladda/spin.js') }}"></script>
-        <script src="{{ URL::to('plugins/ladda/ladda.js') }}"></script>
+
+        <script src="{{ URL::to('AdminLTE-2.3.5/dist/js/suggest.js') }}"></script>
+
+        <script src="{{ URL::to('AdminLTE-2.3.5/dist/js/customFunctions.js') }}"></script>
+
         @yield('javascripts')
         <script>
             $(function () {
